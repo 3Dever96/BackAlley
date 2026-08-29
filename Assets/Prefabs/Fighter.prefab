@@ -14,6 +14,8 @@ GameObject:
   - component: {fileID: 2554139232919663422}
   - component: {fileID: 6639377109735715681}
   - component: {fileID: 8208300860840813267}
+  - component: {fileID: 5595927545313862630}
+  - component: {fileID: 6732753015601607152}
   m_Layer: 6
   m_Name: Fighter
   m_TagString: Untagged
@@ -154,6 +156,34 @@ MonoBehaviour:
   stickForce: -5
   gravity: -29.43
   inputType: 0
+--- !u!114 &5595927545313862630
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 219077969238527226}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30e92b10a7e4e3945b52f9e4b73dca92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HealthSystem
+  maxHealth: 100
+--- !u!114 &6732753015601607152
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 219077969238527226}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3637d106cc5f7ee458ab867c31b766c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AttackSystem
+  groundComboA: {fileID: 11400000, guid: d73d3829f04f4dd4d8f0946c7e772222, type: 2}
+  groundComboB: {fileID: 11400000, guid: 9cf6874fbc7c96d4b8a57a9ca45e510a, type: 2}
+  groundComboC: {fileID: 11400000, guid: eb05358f627743b4dabcfb38a04aa025, type: 2}
 --- !u!1 &663540445095986779
 GameObject:
   m_ObjectHideFlags: 0
@@ -343,7 +373,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6513980136655400821
 Transform:
   m_ObjectHideFlags: 0
@@ -390,6 +420,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6851047672671248870}
   - component: {fileID: 8133948880390668279}
+  - component: {fileID: 5219238399687443885}
   m_Layer: 8
   m_Name: Hurtbox Controller
   m_TagString: Untagged
@@ -440,6 +471,19 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
+--- !u!114 &5219238399687443885
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3890685571608907065}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3921c6b3086cd04682c368b41a69580, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HurtboxController
+  hurtbox: {fileID: 2896226462153983897}
 --- !u!1 &6843080158283903581
 GameObject:
   m_ObjectHideFlags: 0

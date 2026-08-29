@@ -7,11 +7,16 @@ public class FighterController : MonoBehaviour
     // References
     public CharacterController Controller {  get; private set; }
     public InputController Input { get; private set; }
+    public HealthSystem Health { get; private set; }
+    public AttackSystem Attack { get; private set; }
+    public HurtboxController Hurtbox { get; private set; }
 
     // State Machine
     public MoveState CurrentState { get; private set; }
+    public MoveState LastState {  get; private set; }
     [field: SerializeField] public GroundState GroundState { get; private set; } = new GroundState();
     [field: SerializeField] public AirState AirState { get; private set; } = new AirState();
+    [field: SerializeField] public AttackState AttackState { get; private set; } = new AttackState();
 
     // Variables
     public Vector3 Direction { get; set; }
@@ -25,7 +30,7 @@ public class FighterController : MonoBehaviour
     public float gravity;
 
     // Input
-    [SerializeField] private InputType inputType;
+    public InputType inputType;
 
     private PlayerController player;
     private AIController ai;
@@ -33,6 +38,15 @@ public class FighterController : MonoBehaviour
     private void Start()
     {
         Controller = GetComponent<CharacterController>();
+        Health = GetComponent<HealthSystem>();
+        Attack = GetComponent<AttackSystem>();
+
+        if (inputType == InputType.AI)
+        {
+            Health.SetBot(true);
+        }
+
+        Hurtbox = GetComponentInChildren<HurtboxController>();
 
         SetInput();
 
@@ -41,12 +55,15 @@ public class FighterController : MonoBehaviour
 
     private void Update()
     {
-        if (CurrentState != null)
+        if (BattleManager.instance.state == BattleState.Fight)
         {
-            CurrentState.UpdateState(this);
-            CurrentState.ChangeState(this);
+            if (CurrentState != null)
+            {
+                CurrentState.UpdateState(this);
+                CurrentState.ChangeState(this);
 
-            ApplyMovement();
+                ApplyMovement();
+            }
         }
     }
 
@@ -55,6 +72,11 @@ public class FighterController : MonoBehaviour
         if (CurrentState != null)
         {
             CurrentState.ExitState(this);
+
+            if (CurrentState != newState)
+            {
+                LastState = CurrentState;
+            }
         }
 
         CurrentState = newState;

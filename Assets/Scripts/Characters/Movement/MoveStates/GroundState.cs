@@ -7,12 +7,14 @@ public class GroundState : MoveState
     [SerializeField] private float jumpSpeed;
 
     private bool canJump;
+    private bool canAttack;
 
     public override void StartState(FighterController fighter)
     {
         fighter.VerticalSpeed = fighter.stickForce;
 
         canJump = false;
+        canAttack = false;
     }
 
     public override void UpdateState(FighterController fighter)
@@ -43,6 +45,13 @@ public class GroundState : MoveState
         {
             fighter.SetState(fighter.AirState);
         }
+
+        if (fighter.Input.attack && canAttack)
+        {
+            fighter.SetState(fighter.AttackState);
+        }
+
+        canAttack = !fighter.Input.attack;
     }
 
     public override void ExitState(FighterController fighter)
