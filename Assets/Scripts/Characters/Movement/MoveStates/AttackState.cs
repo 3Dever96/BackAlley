@@ -1,13 +1,21 @@
 using UnityEngine;
 
+/// <summary>
+/// Architecture Role: Locomotive State / Combat Execution State.
+/// Drives the universal single-state combo engine. Handles dynamic timing countdowns, 
+/// processes the precise canAttack button-release requirements, scales the physical hurtbox bounds,
+/// and re-enters itself via the hub to advance through the 3-hit string.
+/// </summary>
 [System.Serializable]
 public class AttackState : MoveState
 {
-    private AttackMove currentAttack;
-
-    private bool didAttack;
-    private float currentTime;
-    private bool canAttack;
+    // ==========================================
+    // COMBAT RUNTIME TRACKERS
+    // ==========================================
+    private AttackMove currentAttack;  // Local data cartridge cache for the active combo step statistics
+    private bool didAttack;            // Flag confirming a valid button link occurred inside the input window
+    private float currentTime;         // Running execution clock timer tracker for active frame data
+    private bool canAttack;            // Safety flag ensuring players release the key before pressing again
 
     public override void StartState(FighterController fighter)
     {
@@ -46,8 +54,10 @@ public class AttackState : MoveState
             if (fighter.Input.attack && canAttack)
             {
                 didAttack = true;
+                fighter.SetState(this);
             }
 
+            // Anti-Mashing Property Logic: Enforce strict tap cadence by verifying key releases
             canAttack = !fighter.Input.attack;
         }
     }
@@ -57,18 +67,8 @@ public class AttackState : MoveState
         // 4. ANIMATION STATE CONCLUSION TIMEOUT
         if (currentTime >= currentAttack.attackDuration)
         {
-            if (!didAttack)
-            {
-                // Dropped combo: Return to neutral locomotion safely
-                fighter.SetState(fighter.LastState);
-            }
-            else
-            {
-                // Successful link! Re-enter this EXACT state safely via the Hub.
-                // SetState will call ExitState() -> update LastState -> trigger StartState() 
-                // allowing your components to cycle smoothly to Punch 2/3!
-                fighter.SetState(this);
-            }
+            // Dropped combo: Return to neutral locomotion safely
+            fighter.SetState(fighter.LastState);
         }
     }
 
@@ -77,8 +77,8 @@ public class AttackState : MoveState
         // Shut down the dangerous damage box when moving between actions
         fighter.Hurtbox.DeactivateHitBox();
 
-        // CONDITIONAL COMBO RESET: Only clear the index back to 0 if the player 
-        // dropped the combo timing window. If they are successfully advancing, 
+        // CONDITIONAL COMBO RESET: Only clear the index back to 0 if the player
+        // dropped the combo timing window. If they are successfully advancing,
         // DO NOT wipe the combo deck!
         if (!didAttack)
         {

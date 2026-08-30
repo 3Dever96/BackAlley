@@ -1508,6 +1508,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Fighter
       objectReference: {fileID: 0}
+    - target: {fileID: 1661896402910143396, guid: 19682c9a6110eec4aafd374839c270df, type: 3}
+      propertyPath: m_DefaultControlScheme
+      value: Gamepad
+      objectReference: {fileID: 0}
     - target: {fileID: 3670983907651504832, guid: 19682c9a6110eec4aafd374839c270df, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

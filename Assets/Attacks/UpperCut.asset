@@ -16,8 +16,8 @@ MonoBehaviour:
   attackDescription: 
   attackAnimation: {fileID: 0}
   attackDuration: 0.5
-  inputBuffer: 0
+  inputBuffer: 0.4
   attackPow: 20
-  knockUpForce: 1
-  knockbackForce: 1
+  knockUpForce: 3
+  knockbackForce: 10
   hurtboxSize: {x: 1, y: 1.5, z: 1}
