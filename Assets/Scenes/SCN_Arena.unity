@@ -2000,6 +2000,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Fighter.2
       objectReference: {fileID: 0}
+    - target: {fileID: 2554139232919663422, guid: 19682c9a6110eec4aafd374839c270df, type: 3}
+      propertyPath: attackRange
+      value: 1.2
+      objectReference: {fileID: 0}
     - target: {fileID: 3670983907651504832, guid: 19682c9a6110eec4aafd374839c270df, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

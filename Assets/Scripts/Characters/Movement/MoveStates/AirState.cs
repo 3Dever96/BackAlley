@@ -8,9 +8,12 @@ using UnityEngine;
 [System.Serializable]
 public class AirState : MoveState
 {
+    [SerializeField] private AnimationClip jump;
+    [SerializeField] private AnimationClip fall;
+
     public override void StartState(FighterController fighter)
     {
-        // Air initialization rules sit here (e.g. tracking mid-air jumps or double-dashes)
+
     }
 
     public override void UpdateState(FighterController fighter)
@@ -30,6 +33,15 @@ public class AirState : MoveState
 
         // Maintain the last horizontal face direction vector throughout the duration of the jump arc
         fighter.FaceDirection(fighter.Direction, fighter.turnSpeed);
+
+        if (fighter.VerticalSpeed > 0.1f)
+        {
+            fighter.Animancer.Play(jump, 0.15f);
+        }
+        else if (fighter.VerticalSpeed < -0.01f)
+        {
+            fighter.Animancer.Play(fall, 0.15f);
+        }
     }
 
     public override void ChangeState(FighterController fighter)

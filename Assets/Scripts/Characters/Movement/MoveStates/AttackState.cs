@@ -34,6 +34,8 @@ public class AttackState : MoveState
         if (currentAttack != null)
         {
             fighter.Hurtbox.ActivateHitBox(currentAttack);
+
+            fighter.Animancer.Play(currentAttack.attackAnimation, 0.15f);
         }
         else
         {

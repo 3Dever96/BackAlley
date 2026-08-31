@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AttackMove
   attackName: Forward Jab
   attackDescription: 
-  attackAnimation: {fileID: 0}
-  attackDuration: 0.2
-  inputBuffer: 0.15
-  attackPow: 5
-  knockUpForce: 1
-  knockbackForce: 0.1
-  hurtboxSize: {x: 1, y: 1, z: 1}
+  attackAnimation: {fileID: -3518554014264909117, guid: d1ae957e38cb3dd4c824e03c3da45d5f, type: 3}
+  attackDuration: 0.3
+  inputBuffer: 0.1
+  attackPow: 2
+  knockUpForce: 3
+  knockbackForce: 1
+  hurtboxSize: {x: 1, y: 1, z: 0.5}

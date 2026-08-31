@@ -18,6 +18,8 @@ public class HitState : MoveState
     private AttackData attackData;                     // Local tracking container holding the raw incoming strike properties
     private bool needRecovery;                         // Internal flag tracking whether this specific hit triggers a hard knockdown
 
+    [SerializeField] private AnimationClip hit;
+
     public override void StartState(FighterController fighter)
     {
         // Verify that a valid data box was passed over via the FighterController.OnHit portal
@@ -38,6 +40,8 @@ public class HitState : MoveState
 
     public override void UpdateState(FighterController fighter)
     {
+        fighter.Animancer.Play(hit, 0.15f);
+
         // 3. CONSTANT GRAVITATIONAL FORCE ACCELERATION
         // Continuously pull the vertical axis speed down using your design gravity variable float
         fighter.VerticalSpeed += fighter.gravity * Time.deltaTime;

@@ -19,6 +19,9 @@ public class RecoveryState : MoveState
     [Header("Hitbox Overrides")]
     [SerializeField] private GameObject hitbox;   // Reference to the passive body hitbox object receiving enemy damage
 
+    [SerializeField] private AnimationClip knockout;
+    [SerializeField] private AnimationClip getUp;
+
     public override void StartState(FighterController fighter)
     {
         // 1. FLOOR ANCHOR & LOCK DOWN
@@ -41,7 +44,7 @@ public class RecoveryState : MoveState
 
     public override void UpdateState(FighterController fighter)
     {
-        // Ground frame updates sit completely silent here—which is exactly what we want for a downed character
+        fighter.Animancer.Play(knockout, 0.15f);
     }
 
     public override void ChangeState(FighterController fighter)
@@ -69,5 +72,7 @@ public class RecoveryState : MoveState
         {
             hitbox.SetActive(true);
         }
+
+        fighter.Animancer.Play(getUp, 0.15f);
     }
 }

@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AttackMove
   attackName: Upper Cut
   attackDescription: 
-  attackAnimation: {fileID: 0}
-  attackDuration: 0.5
-  inputBuffer: 0.4
-  attackPow: 20
-  knockUpForce: 3
-  knockbackForce: 10
-  hurtboxSize: {x: 1, y: 1.5, z: 1}
+  attackAnimation: {fileID: -6798670415036197634, guid: d1ae957e38cb3dd4c824e03c3da45d5f, type: 3}
+  attackDuration: 0.55
+  inputBuffer: 0.55
+  attackPow: 8
+  knockUpForce: 6
+  knockbackForce: 20
+  hurtboxSize: {x: 1, y: 1.5, z: 0.5}

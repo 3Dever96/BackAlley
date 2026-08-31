@@ -1,5 +1,6 @@
 using Unity.Cinemachine; // Required for Cinemachine camera targeting hooks
 using UnityEngine;
+using Animancer;
 
 /// <summary>
 /// Architecture Role: Central Information Hub & State Machine Master.
@@ -17,6 +18,7 @@ public class FighterController : MonoBehaviour
     public HealthSystem Health { get; private set; }
     public AttackSystem Attack { get; private set; }
     public HurtboxController Hurtbox { get; private set; }
+    public AnimancerComponent Animancer { get; private set; }
 
     // ==========================================
     // STATE MACHINE PATTERN SETUPS
@@ -54,6 +56,7 @@ public class FighterController : MonoBehaviour
         Controller = GetComponent<CharacterController>();
         Health = GetComponent<HealthSystem>();
         Attack = GetComponent<AttackSystem>();
+        Animancer = GetComponentInChildren<AnimancerComponent>();
 
         // If marked as an AI adversary, route through the specialized health logger tracking rules
         if (inputType == InputType.AI)
