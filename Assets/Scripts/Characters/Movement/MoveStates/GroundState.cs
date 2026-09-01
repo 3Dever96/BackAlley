@@ -22,9 +22,6 @@ public class GroundState : MoveState
     private bool canJump;                       // Safety flag forcing button release before another jump
     private bool canAttack;                     // Safety flag forcing button release before entering AttackState
 
-    [SerializeField] private AnimationClip idle;
-    [SerializeField] private AnimationClip run;
-
     public override void StartState(FighterController fighter)
     {
         // 1. FLOOR ANCHOR: Snap downward tracking forces to flat floor tolerances
@@ -36,7 +33,7 @@ public class GroundState : MoveState
 
         if (!fighter.Animancer.IsPlaying())
         {
-            fighter.Animancer.Play(idle, 0.15f);
+            fighter.Animancer.Play(fighter.Anim.idle, 0.15f);
         }
     }
 
@@ -48,13 +45,13 @@ public class GroundState : MoveState
             // Apply our design running speed to the hub variables
             fighter.CurrentSpeed = moveSpeed;
             fighter.Direction = fighter.Input.direction;
-            fighter.Animancer.Play(run, 0.15f);
+            fighter.Animancer.Play(fighter.Anim.run, 0.15f);
         }
         else
         {
             // No input detected: collapse horizontal speed components to a dead halt
             fighter.CurrentSpeed = 0f;
-            fighter.Animancer.Play(idle, 0.15f);
+            fighter.Animancer.Play(fighter.Anim.idle, 0.15f);
         }
 
         // Continuously rotate our character model mesh to snap toward its active movement heading

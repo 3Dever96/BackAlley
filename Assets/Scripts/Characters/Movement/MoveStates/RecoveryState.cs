@@ -19,9 +19,6 @@ public class RecoveryState : MoveState
     [Header("Hitbox Overrides")]
     [SerializeField] private GameObject hitbox;   // Reference to the passive body hitbox object receiving enemy damage
 
-    [SerializeField] private AnimationClip knockout;
-    [SerializeField] private AnimationClip getUp;
-
     public override void StartState(FighterController fighter)
     {
         // 1. FLOOR ANCHOR & LOCK DOWN
@@ -44,7 +41,7 @@ public class RecoveryState : MoveState
 
     public override void UpdateState(FighterController fighter)
     {
-        fighter.Animancer.Play(knockout, 0.15f);
+        fighter.Animancer.Play(fighter.Anim.knockout, 0.15f);
     }
 
     public override void ChangeState(FighterController fighter)
@@ -73,6 +70,6 @@ public class RecoveryState : MoveState
             hitbox.SetActive(true);
         }
 
-        fighter.Animancer.Play(getUp, 0.15f);
+        fighter.Animancer.Play(fighter.Anim.recover, 0.15f);
     }
 }

@@ -8,9 +8,6 @@ using UnityEngine;
 [System.Serializable]
 public class AirState : MoveState
 {
-    [SerializeField] private AnimationClip jump;
-    [SerializeField] private AnimationClip fall;
-
     public override void StartState(FighterController fighter)
     {
 
@@ -36,11 +33,11 @@ public class AirState : MoveState
 
         if (fighter.VerticalSpeed > 0.1f)
         {
-            fighter.Animancer.Play(jump, 0.15f);
+            fighter.Animancer.Play(fighter.Anim.jump, 0.15f);
         }
         else if (fighter.VerticalSpeed < -0.01f)
         {
-            fighter.Animancer.Play(fall, 0.15f);
+            fighter.Animancer.Play(fighter.Anim.fall, 0.15f);
         }
     }
 

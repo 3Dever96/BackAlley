@@ -18,6 +18,7 @@ public class FighterController : MonoBehaviour
     public HealthSystem Health { get; private set; }
     public AttackSystem Attack { get; private set; }
     public HurtboxController Hurtbox { get; private set; }
+    public AnimationLibrary Anim {  get; private set; }
     public AnimancerComponent Animancer { get; private set; }
 
     // ==========================================
@@ -56,6 +57,7 @@ public class FighterController : MonoBehaviour
         Controller = GetComponent<CharacterController>();
         Health = GetComponent<HealthSystem>();
         Attack = GetComponent<AttackSystem>();
+        Anim = GetComponentInChildren<AnimationLibrary>();
         Animancer = GetComponentInChildren<AnimancerComponent>();
 
         // If marked as an AI adversary, route through the specialized health logger tracking rules
