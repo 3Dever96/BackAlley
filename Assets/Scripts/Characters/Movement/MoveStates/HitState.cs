@@ -38,9 +38,12 @@ public class HitState : MoveState
 
     public override void UpdateState(FighterController fighter)
     {
+        // 3. FLINCH REACTION SNAP ANIMATION
+        // Instantly force the character skeleton into the flinch/damage clip posture.
+        // Animancer ensures this clip holds seamlessly across frames while the physics vectors resolve.
         fighter.Animancer.Play(fighter.Anim.hit, 0.15f);
 
-        // 3. CONSTANT GRAVITATIONAL FORCE ACCELERATION
+        // 4. CONSTANT GRAVITATIONAL FORCE ACCELERATION
         // Continuously pull the vertical axis speed down using your design gravity variable float
         fighter.VerticalSpeed += fighter.gravity * Time.deltaTime;
 
@@ -51,12 +54,12 @@ public class HitState : MoveState
 
     public override void ChangeState(FighterController fighter)
     {
-        // 4. LANDFALL RECOVERY EVALUATION
+        // 5. LANDFALL RECOVERY EVALUATION
         // If our vertical force has shifted fully downward (falling) AND our environmental sphere
         // check verifies a solid floor boundary layers beneath our feet, return safely to locomotion
         if (fighter.VerticalSpeed <= 0f && fighter.CheckCollision(fighter.transform.position, Vector3.up))
         {
-            // 5. THE ARBITRATION ROUTER
+            // 6. THE ARBITRATION ROUTER
             if (!needRecovery)
             {
                 // Tier A: Flinch was low power. Return instantly back to active ground neutral movement control
@@ -72,7 +75,7 @@ public class HitState : MoveState
 
     public override void ExitState(FighterController fighter)
     {
-        // 6. PIPELINE HOUSEKEEPING
+        // 7. PIPELINE HOUSEKEEPING
         // Completely wipe our local variable data container cache to prepare for the next clean hit
         attackData = null;
     }

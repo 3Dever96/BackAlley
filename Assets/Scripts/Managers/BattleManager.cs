@@ -49,41 +49,6 @@ public class BattleManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Increments the master adversary count and refreshes the entry countdown. 
-    /// Triggered upstream dynamically via HealthSystem.SetBot initialization spoke loops.
-    /// </summary>
-    public void AddAIFighter()
-    {
-        // Force the match into the loading/intro layout phase while entities spawn
-        ChangeState(BattleState.Start);
-        aiFighterCount++;
-
-        // 2. TIMING RESET PROTECTION
-        // Stop and restart the clock to ensure the 3-second countdown doesn't fire early 
-        // if multiple AI prefabs instantiate across separate frames during loading sequences.
-        StopCoroutine(StartCountdown());
-        StartCoroutine(StartCountdown());
-    }
-
-    /// <summary>
-    /// Decrements the active adversary counter and evaluates global win conditions. 
-    /// Hooked up dynamically as an automated event delegate listener inside HealthSystem.
-    /// </summary>
-    public void RemoveAIFighter()
-    {
-        aiFighterCount--;
-
-        // 3. WIN STATE EVALUATION
-        // The exact frame all computer-driven enemies drop to absolute zero HP, crown the player champion!
-        if (aiFighterCount == 0)
-        {
-            ChangeState(BattleState.Victory);
-
-            // (Tomorrow: This is the exact condition slot where you can trigger your UI canvas overlay fading loops!)
-        }
-    }
-
-    /// <summary>
     /// Asynchronous match entry clock. Holds the scene gameplay updates frozen for 3 seconds 
     /// before dropping characters into active combat.
     /// </summary>
@@ -115,7 +80,7 @@ public enum BattleState
 {
     Start,    // Match intro / Countdown phase. Locomotion loops are locked.
     Fight,    // Active gameplay simulation. Character updates and inputs run continuously.
-    Victory,  // Player wins! All enemies are KO'd. Triggers celebratory loops.
-    GameOver, // Player loses! Health tank hits 0. Triggers defeat responses.
+    Knockout, // Temporarily slow down time to indicate the match is over.
+    Victory,  // Show the winner celebrating the victory and show options for continuing, starting a rematch, or quitting.
     Paused    // Global simulation suspended via pause option menus.
 }

@@ -31,6 +31,9 @@ public class GroundState : MoveState
         canJump = false;
         canAttack = false;
 
+        // 2. STATE ENTRY SAFETY CHECK
+        // If the Animancer engine has completely stopped or is waking up for the first time, 
+        // immediately blend into our default idle stance over a clean 0.15-second crossfade.
         if (!fighter.Animancer.IsPlaying())
         {
             fighter.Animancer.Play(fighter.Anim.idle, 0.15f);
@@ -39,25 +42,45 @@ public class GroundState : MoveState
 
     public override void UpdateState(FighterController fighter)
     {
-        // 2. HORIZONTAL DIRECTIONAL LOCOMOTION
-        if (fighter.Input.direction != Vector3.zero)
+        // =========================================================================
+        // 3. WAKE-UP PROTECTION GATING
+        // =========================================================================
+        // Check our shared public property lock switch. If the character is currently 
+        // rising from a knockdown, bypass input animation swaps entirely to protect the wake-up clip.
+        if (!fighter.IsRecovering)
         {
-            // Apply our design running speed to the hub variables
-            fighter.CurrentSpeed = moveSpeed;
-            fighter.Direction = fighter.Input.direction;
-            fighter.Animancer.Play(fighter.Anim.run, 0.15f);
-        }
-        else
-        {
-            // No input detected: collapse horizontal speed components to a dead halt
-            fighter.CurrentSpeed = 0f;
-            fighter.Animancer.Play(fighter.Anim.idle, 0.15f);
+            // =========================================================================
+            // 4. HORIZONTAL DIRECTIONAL LOCOMOTION & SNAP CLIPS
+            // =========================================================================
+            if (fighter.Input.direction != Vector3.zero)
+            {
+                // Apply our design running speed to the hub variables
+                fighter.CurrentSpeed = moveSpeed;
+
+                // DIRECT SNAP SWITCH: Forces the model instantly into its running cycle. 
+                // Animancer crossfades this over 0.15 seconds, creating a snappy but fluid acceleration.
+                fighter.Animancer.Play(fighter.Anim.run, 0.15f);
+            }
+            else
+            {
+                // No input detected: collapse horizontal speed components to a dead halt
+                fighter.CurrentSpeed = 0f;
+
+                // DIRECT SNAP SWITCH: Instantly returns the skeletal bones back to our idle sway posture.
+                fighter.Animancer.Play(fighter.Anim.idle, 0.15f);
+            }
         }
 
-        // Continuously rotate our character model mesh to snap toward its active movement heading
+        // 5. MESH ORIENTATION CALCULATIONS
+        // Continuously rotate our character model mesh to snap toward its active movement heading.
+        // Inline validation safety door: Only update the physical direction target if the thumbstick 
+        // vector is actively pressed, preserving the last faced angle when the joystick snaps to neutral.
+        fighter.Direction = fighter.Input.direction != Vector3.zero ? fighter.Input.direction : fighter.Direction;
         fighter.FaceDirection(fighter.Direction, fighter.turnSpeed);
 
-        // 3. JUMP INPUT REGISTER
+        // =========================================================================
+        // 6. JUMP INPUT REGISTER
+        // =========================================================================
         // Trigger upward velocity strictly if they tapped the jump button (and let go previously)
         if (fighter.Input.jump && canJump)
         {
@@ -70,7 +93,7 @@ public class GroundState : MoveState
 
     public override void ChangeState(FighterController fighter)
     {
-        // 4. AIR STATE TRANSITION EVALUATION
+        // 7. AIR STATE TRANSITION EVALUATION
         // Shift out of ground configurations into AirState if an upward force pushes us,
         // or if our environmental raycast sphere verifies there is no solid floor beneath our feet
         if (fighter.VerticalSpeed > 0f || !fighter.CheckCollision(fighter.transform.position, Vector3.up))
@@ -79,7 +102,7 @@ public class GroundState : MoveState
             return; // Break execution frame path to prevent simultaneous state assignment collisions
         }
 
-        // 5. ATTACK STATE TRANSITION EVALUATION
+        // 8. ATTACK STATE TRANSITION EVALUATION
         // Shift out of navigation loops directly into combat arrays if attack button is cleanly tapped
         if (fighter.Input.attack && canAttack)
         {

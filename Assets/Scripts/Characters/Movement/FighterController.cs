@@ -10,32 +10,36 @@ using Animancer;
 [RequireComponent(typeof(CharacterController))]
 public class FighterController : MonoBehaviour
 {
-    // ==========================================
+    // =========================================================================
     // CACHED HUB SPOKE REFERENCES
-    // ==========================================
-    public CharacterController Controller { get; private set; }
-    public InputController Input { get; private set; }
-    public HealthSystem Health { get; private set; }
-    public AttackSystem Attack { get; private set; }
-    public HurtboxController Hurtbox { get; private set; }
-    public AnimationLibrary Anim {  get; private set; }
-    public AnimancerComponent Animancer { get; private set; }
+    // =========================================================================
+    public CharacterController Controller { get; private set; } //
+    public InputController Input { get; private set; } //
+    public HealthSystem Health { get; private set; } //
+    public AttackSystem Attack { get; private set; } //
+    public HurtboxController Hurtbox { get; private set; } //
 
-    // ==========================================
+    // NEW CACHES: Expose the animation data warehouse and performance engines cleanly
+    public AnimationLibrary Anim { get; private set; } //
+    public AnimancerComponent Animancer { get; private set; } //
+
+    // =========================================================================
     // STATE MACHINE PATTERN SETUPS
-    // ==========================================
-    public MoveState CurrentState { get; private set; }
-    public MoveState LastState { get; private set; }
+    // =========================================================================
+    public MoveState CurrentState { get; private set; } //
+    public MoveState LastState { get; private set; } //
 
-    [field: SerializeField] public GroundState GroundState { get; private set; } = new GroundState();
-    [field: SerializeField] public AirState AirState { get; private set; } = new AirState();
-    [field: SerializeField] public AttackState AttackState { get; private set; } = new AttackState();
-    [field: SerializeField] public HitState HitState { get; private set; } = new HitState();
-    [field: SerializeField] public RecoveryState RecoveryState { get; private set; } = new RecoveryState();
+    [field: SerializeField] public GroundState GroundState { get; private set; } = new GroundState(); //
+    [field: SerializeField] public AirState AirState { get; private set; } = new AirState(); //
+    [field: SerializeField] public AttackState AttackState { get; private set; } = new AttackState(); //
+    [field: SerializeField] public HitState HitState { get; private set; } = new HitState(); //
+    [field: SerializeField] public RecoveryState RecoveryState { get; private set; } = new RecoveryState(); //
 
-    // ==========================================
+    // =========================================================================
     // KINEMATIC LOCOMOTION METRICS
-    // ==========================================
+    // =========================================================================
+    // Shared public property lock switch to block manual locomotion input checks while standing up.
+    public bool IsRecovering { get; set; }
     public Vector3 Direction { get; set; }      // Active horizontal heading vector feeding ApplyMovement
     public Vector3 Velocity { get; set; }       // Final combined velocity vector pushed into Controller.Move
     public float CurrentSpeed { get; set; }     // Horizontal run velocity speed scalar
@@ -48,31 +52,27 @@ public class FighterController : MonoBehaviour
 
     [Header("Input Driver Configuration")]
     public InputType inputType;                 // State toggle setting Player vs AI brain routing
-    private PlayerController player;
-    private AIController ai;
+    private PlayerController player; //
+    private AIController ai; //
 
     private void Start()
     {
         // Cache all local operational components immediately at boot execution
-        Controller = GetComponent<CharacterController>();
-        Health = GetComponent<HealthSystem>();
-        Attack = GetComponent<AttackSystem>();
+        Controller = GetComponent<CharacterController>(); //
+        Health = GetComponent<HealthSystem>(); //
+        Attack = GetComponent<AttackSystem>(); //
+
+        // Dynamic search routing: Capture animation data references across children structures
         Anim = GetComponentInChildren<AnimationLibrary>();
         Animancer = GetComponentInChildren<AnimancerComponent>();
-
-        // If marked as an AI adversary, route through the specialized health logger tracking rules
-        if (inputType == InputType.AI)
-        {
-            Health.SetBot(true);
-        }
 
         Hurtbox = GetComponentInChildren<HurtboxController>();
 
         // Configure input driver components
-        SetInput();
+        SetInput(); //
 
         // Drop the fighter into neutral ground locomotion to begin the match loop
-        SetState(GroundState);
+        SetState(GroundState); //
     }
 
     private void Update()

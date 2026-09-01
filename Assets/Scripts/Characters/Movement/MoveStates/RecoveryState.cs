@@ -41,12 +41,15 @@ public class RecoveryState : MoveState
 
     public override void UpdateState(FighterController fighter)
     {
+        // 4. DOWNED LOOP ANIMATION
+        // Instantly force the character model skeleton to remain flat in its knocked-out posture.
+        // Animancer loops this asset frame efficiently while the recovery clock ticks down.
         fighter.Animancer.Play(fighter.Anim.knockout, 0.15f);
     }
 
     public override void ChangeState(FighterController fighter)
     {
-        // 4. TIMEOUT RECOVERY TRACKING
+        // 5. TIMEOUT RECOVERY TRACKING
         // Keep the local countdown running continuously independent of frame rates
         currentTime -= Time.deltaTime;
 
@@ -61,15 +64,28 @@ public class RecoveryState : MoveState
     public override void ExitState(FighterController fighter)
     {
         // =========================================================================
-        // 5. DEFENSIVE SHIELD RECOVERY
+        // 6. DEFENSIVE SHIELD RECOVERY & WAKE-UP ANIMATION
         // =========================================================================
         // The exact frame the character finishes their wake-up/get-up state animation loop,
-        // re-activate the body hitbox mesh so they can take damage normally in active neutral neutral game windows!
+        // re-activate the body hitbox mesh so they can take damage normally in active neutral game windows!
         if (hitbox != null)
         {
             hitbox.SetActive(true);
         }
 
-        fighter.Animancer.Play(fighter.Anim.recover, 0.15f);
+        // Engage our shared public property lock switch to block manual locomotion input checks inside GroundState
+        fighter.IsRecovering = true;
+
+        // TRIGGER WAKE-UP ANCHOR: As we break out of this state back into GroundState locomotion,
+        // command the bones to snap cleanly into their "getting back up" recovery animation.
+        var state = fighter.Animancer.Play(fighter.Anim.recover, 0.15f);
+
+        // 7. VERSION 8.0+ OWNED EVENTS LAMBDA HANDSHAKE
+        // The absolute split-second the recovery animation concludes its single play-through,
+        // clear the central flag so your GroundState input protection loops instantly drop away!
+        state.OwnedEvents.OnEnd = () =>
+        {
+            fighter.IsRecovering = false;
+        };
     }
 }

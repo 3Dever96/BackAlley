@@ -33,25 +33,6 @@ public class HealthSystem : MonoBehaviour
     }
 
     /// <summary>
-    /// Configures the character profile assignment rules and links life-cycle hooks dynamically to global referees.
-    /// </summary>
-    /// <param name="value">True marks this object entity as a computer-driven AI adversary.</param>
-    public void SetBot(bool value)
-    {
-        isBot = value;
-
-        if (isBot)
-        {
-            // Direct Call: Register this entity presence into the referee manager tracker array
-            BattleManager.instance.AddAIFighter();
-
-            // Dynamic Subscription: Hook our local death event up to the manager's cleanup array portal.
-            // The exact split-second this AI drops to 0 HP, it will automatically adjust the active match count!
-            OnKnockout += BattleManager.instance.RemoveAIFighter;
-        }
-    }
-
-    /// <summary>
     /// Subtracts incoming strike variables from the active life pool and evaluates defeat threshold boundaries.
     /// Uses architectural messages to route physics packages down into adjacent component states.
     /// </summary>
