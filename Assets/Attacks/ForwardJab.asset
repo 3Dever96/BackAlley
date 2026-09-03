@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8bc605df867c66f44b2f2a6dee7592dc, type: 3}
+  m_Name: ForwardJab
+  m_EditorClassIdentifier: Assembly-CSharp::AttackMove
+  attackName: Forward Jab
+  attackDescription: 
+  attackAnimation: {fileID: -3518554014264909117, guid: d1ae957e38cb3dd4c824e03c3da45d5f, type: 3}
+  attackDuration: 0.3
+  inputBuffer: 0.1
+  attackPow: 2
+  knockUpForce: 3
+  knockbackForce: 1
+  hurtboxSize: {x: 1, y: 1, z: 0.5}
