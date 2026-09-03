@@ -29,11 +29,13 @@ public class FighterController : MonoBehaviour
     public MoveState CurrentState { get; private set; } //
     public MoveState LastState { get; private set; } //
 
+    [field: SerializeField] public ReadyState ReadyState { get; private set; } = new ReadyState();
     [field: SerializeField] public GroundState GroundState { get; private set; } = new GroundState(); //
     [field: SerializeField] public AirState AirState { get; private set; } = new AirState(); //
     [field: SerializeField] public AttackState AttackState { get; private set; } = new AttackState(); //
     [field: SerializeField] public HitState HitState { get; private set; } = new HitState(); //
     [field: SerializeField] public RecoveryState RecoveryState { get; private set; } = new RecoveryState(); //
+    [field: SerializeField] public FinalState FinalState { get; private set; } = new FinalState();
 
     // =========================================================================
     // KINEMATIC LOCOMOTION METRICS
@@ -44,6 +46,7 @@ public class FighterController : MonoBehaviour
     public Vector3 Velocity { get; set; }       // Final combined velocity vector pushed into Controller.Move
     public float CurrentSpeed { get; set; }     // Horizontal run velocity speed scalar
     public float VerticalSpeed { get; set; }    // Vertical physics forces (gravity pulls or jump velocities)
+    public bool IsKnockedOut { get; set; }
 
     [Header("Shared Locomotion Properties")]
     public float turnSpeed;                     // Angular rotation snap tracking speed
@@ -55,11 +58,15 @@ public class FighterController : MonoBehaviour
     private PlayerController player; //
     private AIController ai; //
 
+    public TeamColor team;
+
     private void Start()
     {
         // Cache all local operational components immediately at boot execution
         Controller = GetComponent<CharacterController>(); //
         Health = GetComponent<HealthSystem>(); //
+        Health.OnKnockout += OnKnockout;
+
         Attack = GetComponent<AttackSystem>(); //
 
         // Dynamic search routing: Capture animation data references across children structures
@@ -72,13 +79,16 @@ public class FighterController : MonoBehaviour
         SetInput(); //
 
         // Drop the fighter into neutral ground locomotion to begin the match loop
-        SetState(GroundState); //
+        SetState(ReadyState); //
+
+        BattleManager.instance.AddFighter(this);
+        BattleManager.instance.OnVictory += SetFinalState;
     }
 
     private void Update()
     {
         // Global Match Gate: Frame execution loops only execute if the match referee says "Fight"
-        if (BattleManager.instance.state == BattleState.Fight)
+        if (BattleManager.instance.state != BattleState.Start)
         {
             if (CurrentState != null)
             {
@@ -128,11 +138,7 @@ public class FighterController : MonoBehaviour
     {
         if (lookDirection == Vector3.zero) return;
 
-        transform.rotation = Quaternion.RotateTowards(
-            transform.rotation,
-            Quaternion.LookRotation(lookDirection),
-            turnSpeed * Time.deltaTime
-        );
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(lookDirection), turnSpeed * Time.deltaTime);
     }
 
     /// <summary>
@@ -204,5 +210,15 @@ public class FighterController : MonoBehaviour
 
         // 2. FORCED TRANSITION: Instantly break out of locomotion/attacking and shift gears into the hit reaction
         SetState(HitState);
+    }
+
+    public void OnKnockout()
+    {
+        IsKnockedOut = true;
+    }
+
+    public void SetFinalState()
+    {
+        SetState(FinalState);
     }
 }

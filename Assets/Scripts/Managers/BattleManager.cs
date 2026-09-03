@@ -1,5 +1,7 @@
+﻿using System; // Required to unlock Coroutines and IEnumerator asynchronous timers
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using System.Collections; // Required to unlock Coroutines and IEnumerator asynchronous timers
 
 /// <summary>
 /// Architecture Role: Master Referee / Global Match Lifecycle Manager.
@@ -17,9 +19,15 @@ public class BattleManager : MonoBehaviour
     // GLOBAL MATCH LOGISTICS & TRACKERS
     // ==========================================
     [Header("Match Progression Tracks")]
-    [SerializeField] private int aiFighterCount; // Active counter tracking living computer adversaries in the arena
+    private Dictionary<TeamColor, List<FighterController>> fighterTeam = new Dictionary<TeamColor, List<FighterController>>();
+    private TeamColor playerTeam;
 
     public BattleState state;                    // Master switch tracking the active global timeline phase
+
+    public event Action OnVictory;
+    public event Action OnPause;
+
+    public float countdown;
 
     private void Awake()
     {
@@ -39,6 +47,114 @@ public class BattleManager : MonoBehaviour
         }
     }
 
+    public void AddFighter(FighterController newFighter)
+    {
+        if (!fighterTeam.ContainsKey(newFighter.team))
+        {
+            fighterTeam.Add(newFighter.team, new List<FighterController>());
+        }
+
+        fighterTeam[newFighter.team].Add(newFighter);
+
+        if (newFighter.inputType == InputType.Player)
+        {
+            playerTeam = newFighter.team;
+        }
+
+        StopCoroutine(StartCountdown());
+        StartCoroutine(StartCountdown());
+    }
+
+    // Inside your master BattleManager or Team Management hub:
+    public void UpdateFighters()
+    {
+        int standingTeams = 0;
+
+        // =========================================================================
+        // 1. SYSTEMATIC TEAM ENUM ITERATION
+        // =========================================================================
+        // We loop through the master enum definition array to ensure we check every color 
+        // in the exact same deterministic order every single time.
+        foreach (TeamColor teamColor in System.Enum.GetValues(typeof(TeamColor)))
+        {
+            int standingFighters = 0;
+
+            // 2. THE VALIDATION SAFETY GATE
+            // Verify that the team key exists in your dictionary configuration 
+            // to prevent unhandled reference crashes on empty team slots.
+            if (fighterTeam.ContainsKey(teamColor) && fighterTeam[teamColor] != null)
+            {
+                // Cache the list pointer locally for optimization
+                List<FighterController> activeTeamList = fighterTeam[teamColor];
+
+                // =========================================================================
+                // 3. THE INNER INDIVIDUAL FIGHTER ITERATION
+                // =========================================================================
+                // Now we step through every active character registered under this team color bracket
+                for (int i = 0; i < activeTeamList.Count; i++)
+                {
+                    FighterController fighter = activeTeamList[i];
+
+                    // Safety Check: Ensure the fighter instance hasn't been destroyed mid-match
+                    if (fighter != null)
+                    {
+                        if (!fighter.IsKnockedOut)
+                        {
+                            standingFighters++;
+                        }
+                    }
+                }
+            }
+
+            if (standingFighters > 0)
+            {
+                standingTeams++;
+            }
+        }
+
+        if (standingTeams == 1)
+        {
+            ChangeState(BattleState.Knockout);
+            StartCoroutine(KnockoutTime());
+        }
+    }
+
+    public bool PlayerWon()
+    {
+        int standingFighters = 0;
+
+        if (fighterTeam.ContainsKey(playerTeam) && fighterTeam[playerTeam] != null)
+        {
+            // Cache the list pointer locally for optimization
+            List<FighterController> activeTeamList = fighterTeam[playerTeam];
+
+            // =========================================================================
+            // 3. THE INNER INDIVIDUAL FIGHTER ITERATION
+            // =========================================================================
+            // Now we step through every active character registered under this team color bracket
+            for (int i = 0; i < activeTeamList.Count; i++)
+            {
+                FighterController fighter = activeTeamList[i];
+
+                // Safety Check: Ensure the fighter instance hasn't been destroyed mid-match
+                if (fighter != null)
+                {
+                    if (!fighter.IsKnockedOut)
+                    {
+                        standingFighters++;
+                    }
+                }
+            }
+        }
+
+        if (standingFighters > 0)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     /// <summary>
     /// Master state router. Shifts the global gears of the match timeline framework (Start, Fight, Victory, etc.).
     /// </summary>
@@ -54,7 +170,7 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     private IEnumerator StartCountdown()
     {
-        float countdown = 3f;
+        countdown = 3f;
 
         // Count down smoothly using delta time intervals independent of hardware frame-rates
         while (countdown > 0)
@@ -70,6 +186,30 @@ public class BattleManager : MonoBehaviour
             ChangeState(BattleState.Fight);
         }
     }
+
+    private IEnumerator KnockoutTime()
+    {
+        Time.timeScale = 0.15f;
+
+        float knockoutTime = 3f;
+
+        while (knockoutTime > 0f)
+        {
+            knockoutTime -= Time.unscaledDeltaTime;
+
+            yield return null;
+        }
+
+        Time.timeScale = 1f;
+
+        ChangeState(BattleState.Victory);
+        OnVictory?.Invoke();
+    }
+
+    public void PauseGame()
+    {
+        OnPause?.Invoke();
+    }
 }
 
 /// <summary>
@@ -83,4 +223,12 @@ public enum BattleState
     Knockout, // Temporarily slow down time to indicate the match is over.
     Victory,  // Show the winner celebrating the victory and show options for continuing, starting a rematch, or quitting.
     Paused    // Global simulation suspended via pause option menus.
+}
+
+public enum TeamColor
+{
+    Red,
+    Blue,
+    Green,
+    Yellow
 }

@@ -56,6 +56,7 @@ public class HealthSystem : MonoBehaviour
         {
             // Unleash our local instance death sequence (Swaps animations, cleans counters)
             OnKnockout?.Invoke();
+            BattleManager.instance.UpdateFighters();
         }
     }
 }

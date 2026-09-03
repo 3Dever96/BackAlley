@@ -59,16 +59,23 @@ public class HitState : MoveState
         // check verifies a solid floor boundary layers beneath our feet, return safely to locomotion
         if (fighter.VerticalSpeed <= 0f && fighter.CheckCollision(fighter.transform.position, Vector3.up))
         {
-            // 6. THE ARBITRATION ROUTER
-            if (!needRecovery)
+            if (!fighter.IsKnockedOut)
             {
-                // Tier A: Flinch was low power. Return instantly back to active ground neutral movement control
-                fighter.SetState(fighter.GroundState);
+                // 6. THE ARBITRATION ROUTER
+                if (!needRecovery)
+                {
+                    // Tier A: Flinch was low power. Return instantly back to active ground neutral movement control
+                    fighter.SetState(fighter.GroundState);
+                }
+                else
+                {
+                    // Tier B: Heavy launch crash! Divert character into the immobile RecoveryState loop
+                    fighter.SetState(fighter.RecoveryState);
+                }
             }
             else
             {
-                // Tier B: Heavy launch crash! Divert character into the immobile RecoveryState loop
-                fighter.SetState(fighter.RecoveryState);
+                fighter.SetState(fighter.FinalState);
             }
         }
     }
